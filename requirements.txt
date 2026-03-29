@@ -6,7 +6,10 @@ qrcode[pil]>=7.4.2
 Pillow>=10.0.0
 
 # GUI Framework
-tkinter  # Usually comes with Python
+# tkinter - Built-in with Python (no installation needed via pip)
+# On Ubuntu/Debian: sudo apt-get install python3-tk
+# On macOS: Included with python3
+# On Windows: Included with Python installer
 
 # File handling
 chardet>=5.2.0  # For text encoding detection

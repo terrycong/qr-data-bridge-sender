@@ -276,7 +276,8 @@ class QRSlideshowPlayer:
             self.current_index = 0
             self.file_info_label.config(text=f"✓ {filename} ({len(chunks)} 块)", foreground="green")
             self.count_label.config(text=f"数据块：{len(self.chunks)}")
-            self.progress_bar.configure(maximum=len(self.chunks))
+            self.progress_var = tk.IntVar(value=0)
+            self.progress_bar.configure(variable=self.progress_var, maximum=len(self.chunks))
             
             # 显示第一个二维码
             self._display_current_frame()

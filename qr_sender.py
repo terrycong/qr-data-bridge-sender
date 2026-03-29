@@ -262,16 +262,24 @@ class QRSlideshowPlayer:
                 messagebox.showerror("错误", "文件为空或读取失败")
                 return
             
-            # 转换为 Base64
-            self.chunks = [self.chunker.chunk_to_base64(chunk) for chunk in chunks]
+            # 转换为 Base64 并添加分片元数据前缀
+            # 格式：[CHUNK:x/y][TYPE:FILE]base64 内容
+            self.chunks = []
+            total_chunks = len(chunks)
             
-            # 创建元数据
+            for i, chunk in enumerate(chunks):
+                base64_data = self.chunker.chunk_to_base64(chunk)
+                # 使用接收端兼容的格式：[CHUNK:1/10][TYPE:FILE]实际内容
+                chunk_with_meta = f"[CHUNK:{i+1}/{total_chunks}][TYPE:FILE]{base64_data}"
+                self.chunks.append(chunk_with_meta)
+            
+            # 创建元数据并作为第一个二维码（索引 0）
             filename = Path(file_path).name
-            self.metadata = self.chunker.create_metadata(filename, len(self.chunks), chunk_size)
-            
-            # 添加元数据作为第一个二维码
+            self.metadata = self.chunker.create_metadata(filename, total_chunks, chunk_size)
             metadata_str = json.dumps(self.metadata)
-            self.chunks.insert(0, f"META:{metadata_str}")
+            # 元数据也使用相同格式，索引为 0
+            meta_chunk = f"[CHUNK:0/{total_chunks}][TYPE:META]{metadata_str}"
+            self.chunks.insert(0, meta_chunk)
             
             # 更新 UI
             self.current_index = 0

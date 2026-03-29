@@ -72,25 +72,26 @@ class QRGenerator:
     """二维码生成器"""
     
     @staticmethod
-    def generate_qr(data: str, size: int = 10) -> Image.Image:
+    def generate_qr(data: str, version: int = 10) -> Image.Image:
         """
         生成二维码图片
         
         Args:
             data: 要编码的数据
-            size: 二维码大小（1-40），默认 10
+            version: 二维码版本（1-40），固定版本确保每帧信息密度一致
+                     版本 10 最大容量约 200 字节（HIGH 纠错级别）
             
         Returns:
             PIL Image 对象
         """
         qr = qrcode.QRCode(
-            version=size,
+            version=version,  # 固定版本，不使用 fit=True 自动调整
             error_correction=qrcode.constants.ERROR_CORRECT_H,  # 高纠错级别
             box_size=10,
             border=4,
         )
         qr.add_data(data)
-        qr.make(fit=True)
+        qr.make()  # 不使用 fit=True，保持固定版本
         
         img = qr.make_image(fill_color="black", back_color="white")
         return img
